@@ -10,6 +10,7 @@ Content-Type: application/json
   "email": "test@example.com"
 }
 
+
 ### 점수 등록
 POST http://localhost:8080/api/leaderboard/scores?userId=user1&score=100
 Content-Type: application/json
