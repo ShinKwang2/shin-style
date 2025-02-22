@@ -2,3 +2,4 @@ rootProject.name = 'shin-style'
 
 include 'basic'
 include 'basic:redis'
+include 'basic:kafka'
