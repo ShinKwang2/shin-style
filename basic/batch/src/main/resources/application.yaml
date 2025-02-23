@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  batch:
+    jdbc:
+      initialize-schema: always # H2 DB에 자동으로 schema 등록
+    job:
+      enabled: false # 자동 실행 비활성화
+
+logging:
+  level:
+    org.springframework.batch: DEBUG
