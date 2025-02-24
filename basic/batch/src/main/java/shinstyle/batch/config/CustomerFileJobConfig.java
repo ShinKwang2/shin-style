@@ -14,21 +14,32 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
+import org.springframework.batch.item.support.SynchronizedItemStreamReader;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import shinstyle.batch.model.Customer;
 
 import java.time.LocalDateTime;
 
-@RequiredArgsConstructor
 @Slf4j
 @Configuration
 public class CustomerFileJobConfig {
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
+    private final TaskExecutor taskExecutor;
+
+    public CustomerFileJobConfig(JobRepository jobRepository,
+                                 PlatformTransactionManager transactionManager,
+                                 @Qualifier("CustomerJobTaskExecutor") TaskExecutor taskExecutor) {
+        this.jobRepository = jobRepository;
+        this.transactionManager = transactionManager;
+        this.taskExecutor = taskExecutor;
+    }
 
     @Bean
     public Job customerFileJob() {
@@ -46,21 +57,31 @@ public class CustomerFileJobConfig {
                 .reader(customerFileReader())
                 .processor(customerProcessor())
                 .writer(customerWriter())
+                .taskExecutor(taskExecutor) // 멀티스레드 실행
+                //.throttleLimit(5) // 동시 실행 스레드 제한 (Deprecated)
+                .listener(new ThreadMonitorListener(taskExecutor))
+                .listener(new StepPerformanceListener())
                 .build();
     }
 
     @Bean
-    @StepScope // Step에서만 사용할 수 있게 설정
-    public FlatFileItemReader<Customer> customerFileReader() {
-        return new FlatFileItemReaderBuilder<Customer>()
-                .name("customerFileReader")
-                .resource(new ClassPathResource("customer.csv"))
-                .delimited()
-                .names("id", "name", "email")
-                .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
-                    setTargetType(Customer.class);
-                }})
-                .build();
+    @StepScope
+    public SynchronizedItemStreamReader<Customer> customerFileReader() {
+        // Thread-safe를 위한 Synchronized Reader 사용
+        SynchronizedItemStreamReader<Customer> reader = new SynchronizedItemStreamReader<>();
+        reader.setDelegate(
+                new FlatFileItemReaderBuilder<Customer>()
+                        .name("customerFileReader")
+                        .resource(new ClassPathResource("customer.csv"))
+                        .delimited()
+                        .names("id", "name", "email")
+                        .fieldSetMapper(new BeanWrapperFieldSetMapper<>() {{
+                            setTargetType(Customer.class);
+                        }})
+                        .build()
+        );
+
+        return reader;
     }
 
     @Bean
