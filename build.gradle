@@ -29,6 +29,15 @@ allprojects {
         }
     }
 
+    ext {
+        springCloudVersion = "2023.0.5"
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        }
+    }
 
     dependencies {
 

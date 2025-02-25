@@ -4,3 +4,6 @@ include 'basic'
 include 'basic:redis'
 include 'basic:kafka'
 include 'basic:batch'
+
+include 'promotion'
+include 'promotion:discovery-service'
