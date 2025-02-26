@@ -7,3 +7,9 @@ include 'basic:batch'
 
 include 'promotion'
 include 'promotion:discovery-service'
+include 'promotion:api-gateway'
+include 'promotion:user-service'
+
+
+include 'common'
+include 'common:snowflake'
