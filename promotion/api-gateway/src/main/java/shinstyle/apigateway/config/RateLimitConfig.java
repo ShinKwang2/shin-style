@@ -19,8 +19,8 @@ public class RateLimitConfig {
     @Bean
     public KeyResolver userKeyResolver() {
         return exchange -> Mono.just(
-                exchange.getRequest().getHeaders().getFirst("X-User-ID") != null ?
-                        exchange.getRequest().getHeaders().getFirst("X-User-ID") :
+                exchange.getRequest().getHeaders().getFirst("X-USER-ID") != null ?
+                        exchange.getRequest().getHeaders().getFirst("X-USER-ID") :
                         exchange.getRequest().getRemoteAddress().getAddress().getHostAddress()
         );
     }
