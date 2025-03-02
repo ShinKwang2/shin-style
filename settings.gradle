@@ -9,6 +9,7 @@ include 'promotion'
 include 'promotion:discovery-service'
 include 'promotion:api-gateway'
 include 'promotion:user-service'
+include 'promotion:coupon-service'
 
 
 include 'common'
