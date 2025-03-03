@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 public class CouponPolicy {
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

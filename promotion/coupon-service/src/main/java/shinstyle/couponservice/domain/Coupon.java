@@ -23,7 +23,7 @@ public class Coupon {
         CANCELLED
     }
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
