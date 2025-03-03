@@ -60,7 +60,7 @@ class CouponServiceTest {
             mockedStatic.when(UserIdInterceptor::getCurrentUserId).thenReturn(TEST_USER_ID);
 
             // When
-            CouponDto.Response response = couponService.issueCoupon(request);
+            CouponDto.Response response = couponService.issueCoupon(request, TEST_USER_ID);
 
             // Then
             assertThat(response.getId()).isEqualTo(TEST_COUPON_ID);
@@ -82,7 +82,7 @@ class CouponServiceTest {
         BDDMockito.when(couponPolicyRepository.findByIdWithLock(BDDMockito.any())).thenReturn(Optional.of(couponPolicy));
 
         // When & Then
-        assertThatThrownBy(() -> couponService.issueCoupon(request))
+        assertThatThrownBy(() -> couponService.issueCoupon(request, TEST_USER_ID))
                 .isInstanceOf(CouponIssueException.class)
                 .hasMessageContaining("쿠폰 발급 기간이 아닙니다.");
     }
@@ -195,10 +195,10 @@ class CouponServiceTest {
         }
     }
 
-    private CouponPolicy givenCouponPolicy() {
+    public static CouponPolicy givenCouponPolicy() {
         return givenCouponPolicy(LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1));
     }
-    private CouponPolicy givenCouponPolicy(LocalDateTime startTime, LocalDateTime endTime) {
+    public static CouponPolicy givenCouponPolicy(LocalDateTime startTime, LocalDateTime endTime) {
         return CouponPolicy.builder()
                 .id(1L)
                 .name("테스트 쿠폰")
@@ -212,7 +212,7 @@ class CouponServiceTest {
                 .build();
     }
 
-    private Coupon givenCoupon(CouponPolicy couponPolicy) {
+    public static Coupon givenCoupon(CouponPolicy couponPolicy) {
         return Coupon.builder()
                 .id(TEST_COUPON_ID)
                 .userId(TEST_USER_ID)

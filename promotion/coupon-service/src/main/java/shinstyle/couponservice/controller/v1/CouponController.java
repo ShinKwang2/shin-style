@@ -3,6 +3,7 @@ package shinstyle.couponservice.controller.v1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import shinstyle.couponservice.config.UserIdInterceptor;
 import shinstyle.couponservice.dto.v1.CouponDto;
 import shinstyle.couponservice.service.v1.CouponService;
 
@@ -17,7 +18,8 @@ public class CouponController {
 
     @PostMapping("/issue")
     public ResponseEntity<CouponDto.Response> issueCoupon(@RequestBody CouponDto.IssueRequest request) {
-        return ResponseEntity.ok(couponService.issueCoupon(request));
+        Long userId = UserIdInterceptor.getCurrentUserId();
+        return ResponseEntity.ok(couponService.issueCoupon(request, userId));
     }
 
     @PostMapping("/{couponId}/use")

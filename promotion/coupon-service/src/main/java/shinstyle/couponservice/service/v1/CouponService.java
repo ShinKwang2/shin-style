@@ -26,7 +26,7 @@ public class CouponService {
     private final CouponPolicyRepository couponPolicyRepository;
 
     @Transactional
-    public CouponDto.Response issueCoupon(CouponDto.IssueRequest request) {
+    public CouponDto.Response issueCoupon(CouponDto.IssueRequest request, Long userId) {
         CouponPolicy couponPolicy = couponPolicyRepository.findByIdWithLock(request.getCouponPolicyId())
                 .orElseThrow(() -> new CouponIssueException("쿠폰 정책을 찾을 수 없습니다."));
 
@@ -43,7 +43,7 @@ public class CouponService {
         Coupon coupon = Coupon.builder()
                 .id(snowflake.nextId())
                 .couponPolicy(couponPolicy)
-                .userId(UserIdInterceptor.getCurrentUserId())
+                .userId(userId)
                 .couponCode(generateCouponCode())
                 .build();
 
