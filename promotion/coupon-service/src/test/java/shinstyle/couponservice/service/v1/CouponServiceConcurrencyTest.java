@@ -1,5 +1,6 @@
 package shinstyle.couponservice.service.v1;
 
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.*;
 import static shinstyle.couponservice.service.v1.CouponServiceTest.givenCouponPolicy;
 
+@Slf4j
 @SpringBootTest(properties = "eureka.client.enabled=false")
 public class CouponServiceConcurrencyTest {
 
@@ -30,7 +32,7 @@ public class CouponServiceConcurrencyTest {
     CouponPolicyRepository couponPolicyRepository;
 
     @Test
-    void 여러명_쿠폰_신청() throws Exception {
+    void 쿠폰_신청_동시성_테스트() throws Exception {
         // Given
         CouponPolicy couponPolicy = givenCouponPolicy();
         CouponPolicy savedCouponPolicy = couponPolicyRepository.save(couponPolicy);
@@ -47,7 +49,7 @@ public class CouponServiceConcurrencyTest {
                             .couponPolicyId(savedCouponPolicy.getId())
                             .build(), userId);
                 } catch (CouponIssueException e) {
-                    System.out.println("쿠폰 발급 실패: " + userId);
+                    log.info("쿠폰 발급 실패: {}", userId);
                 } finally {
                     latch.countDown();
                 }
