@@ -1,7 +1,6 @@
 package shinstyle.couponservice.service.v1;
 
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,12 +10,12 @@ import shinstyle.couponservice.exception.CouponIssueException;
 import shinstyle.couponservice.repository.CouponPolicyRepository;
 import shinstyle.couponservice.repository.CouponRepository;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.assertj.core.api.Assertions.*;
-import static shinstyle.couponservice.service.v1.CouponServiceTest.givenCouponPolicy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest(properties = "eureka.client.enabled=false")
@@ -34,7 +33,7 @@ public class CouponServiceConcurrencyTest {
     @Test
     void 쿠폰_신청_동시성_테스트() throws Exception {
         // Given
-        CouponPolicy couponPolicy = givenCouponPolicy();
+        CouponPolicy couponPolicy = givenCouponPolicy(100);
         CouponPolicy savedCouponPolicy = couponPolicyRepository.save(couponPolicy);
 
         int threadCount = 300;
@@ -59,6 +58,20 @@ public class CouponServiceConcurrencyTest {
         latch.await();
 
         assertThat(couponRepository.countByCouponPolicyId(savedCouponPolicy.getId())).isEqualTo(100);
+    }
+
+    private CouponPolicy givenCouponPolicy(Integer totalQuantity) {
+        return CouponPolicy.builder()
+                .id(1L)
+                .name("테스트 쿠폰")
+                .discountType(CouponPolicy.DiscountType.FIXED_AMOUNT)
+                .discountValue(1_000)
+                .minimumOrderAmount(10_000)
+                .maximumDiscountAmount(1000)
+                .totalQuantity(totalQuantity)
+                .startTime(LocalDateTime.now().minusDays(1))
+                .endTime(LocalDateTime.now().plusDays(1))
+                .build();
     }
 }
 

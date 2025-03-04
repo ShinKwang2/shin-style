@@ -3,6 +3,7 @@ package shinstyle.couponservice.dto.v1;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -14,6 +15,8 @@ public class CouponPolicyDto {
 
     @Getter
     @ToString
+    @AllArgsConstructor
+    @Builder
     public static class CreateRequest {
         @NotBlank(message = "쿠폰 정책 이름은 필수입니다.")
         private String name;
